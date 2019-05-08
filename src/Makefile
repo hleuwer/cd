@@ -9,52 +9,52 @@ do_all:        cd cd_pdflib cdpdf cdgl cdim cdcontextplus cdlua5 cdluapdf5 cdlua
 
 cd_pdflib:
 	@$(TECMAKE_CMD) MF=cd_pdflib
-  
+
 cd:
 	@$(TECMAKE_CMD)
-  
+
 cdpdf:
 	@$(TECMAKE_CMD) MF=cdpdf
 cdgl:
 	@$(TECMAKE_CMD) MF=cdgl
 cdim:
 	@$(TECMAKE_CMD) MF=cdim
-  
+
 cdcontextplus:
 	@$(TECMAKE_CMD) MF=cdcontextplus
 cddirect2d:
 	@$(TECMAKE_CMD) MF=cddirect2d
-  
+
 # Building for the default (USE_LUA51) 
 # or for the defined at the environment
-  
+
 cdlua5:
-	@$(TECMAKE_CMD) MF=cdlua5 
-#	@$(TECMAKE_CMD) MF=cdlua5 USE_LUA51=Yes
-#	@$(TECMAKE_CMD) MF=cdlua5 USE_LUA52=Yes
-#	@$(TECMAKE_CMD) MF=cdlua5 USE_LUA53=Yes
+	@$(TECMAKE_CMD) MF=cdlua5 USE_LUA51=Yes
+	@$(TECMAKE_CMD) MF=cdlua5 USE_LUA52=Yes
+	@$(TECMAKE_CMD) MF=cdlua5 USE_LUA53=Yes
+#	@$(TECMAKE_CMD) MF=cdlua5
 cdluapdf5:
-	@$(TECMAKE_CMD) MF=cdluapdf5 
-#	@$(TECMAKE_CMD) MF=cdluapdf5 USE_LUA51=Yes
-#	@$(TECMAKE_CMD) MF=cdluapdf5 USE_LUA52=Yes
-#	@$(TECMAKE_CMD) MF=cdluapdf5 USE_LUA53=Yes
+	@$(TECMAKE_CMD) MF=cdluapdf5 USE_LUA51=Yes
+	@$(TECMAKE_CMD) MF=cdluapdf5 USE_LUA52=Yes
+	@$(TECMAKE_CMD) MF=cdluapdf5 USE_LUA53=Yes
+#	@$(TECMAKE_CMD) MF=cdluapdf5 
 cdluagl5:
-	@$(TECMAKE_CMD) MF=cdluagl5 
-#	@$(TECMAKE_CMD) MF=cdluagl5 USE_LUA51=Yes
-#	@$(TECMAKE_CMD) MF=cdluagl5 USE_LUA52=Yes
-#	@$(TECMAKE_CMD) MF=cdluagl5 USE_LUA53=Yes
+	@$(TECMAKE_CMD) MF=cdluagl5 USE_LUA51=Yes
+	@$(TECMAKE_CMD) MF=cdluagl5 USE_LUA52=Yes
+	@$(TECMAKE_CMD) MF=cdluagl5 USE_LUA53=Yes
+#	@$(TECMAKE_CMD) MF=cdluagl5 
 cdluacontextplus5:
-	@$(TECMAKE_CMD) MF=cdluacontextplus5 
-#	@$(TECMAKE_CMD) MF=cdluacontextplus5 USE_LUA51=Yes
-#	@$(TECMAKE_CMD) MF=cdluacontextplus5 USE_LUA52=Yes
-#	@$(TECMAKE_CMD) MF=cdluacontextplus5 USE_LUA53=Yes
+	@$(TECMAKE_CMD) MF=cdluacontextplus5 USE_LUA51=Yes
+	@$(TECMAKE_CMD) MF=cdluacontextplus5 USE_LUA52=Yes
+	@$(TECMAKE_CMD) MF=cdluacontextplus5 USE_LUA53=Yes
+#	@$(TECMAKE_CMD) MF=cdluacontextplus5 
 cdluadirect2d5:
-	@$(TECMAKE_CMD) MF=cdluadirect2d5 
-#	@$(TECMAKE_CMD) MF=cdluadirect2d5 USE_LUA51=Yes
-#	@$(TECMAKE_CMD) MF=cdluadirect2d5 USE_LUA52=Yes
-#	@$(TECMAKE_CMD) MF=cdluadirect2d5 USE_LUA53=Yes
+	@$(TECMAKE_CMD) MF=cdluadirect2d5 USE_LUA51=Yes
+	@$(TECMAKE_CMD) MF=cdluadirect2d5 USE_LUA52=Yes
+	@$(TECMAKE_CMD) MF=cdluadirect2d5 USE_LUA53=Yes
+#	@$(TECMAKE_CMD) MF=cdluadirect2d5 
 cdluaim5:
-	@$(TECMAKE_CMD) MF=cdluaim5 
-#	@$(TECMAKE_CMD) MF=cdluaim5 USE_LUA51=Yes
-#	@$(TECMAKE_CMD) MF=cdluaim5 USE_LUA52=Yes
-#	@$(TECMAKE_CMD) MF=cdluaim5 USE_LUA53=Yes
+	@$(TECMAKE_CMD) MF=cdluaim5 USE_LUA51=Yes
+	@$(TECMAKE_CMD) MF=cdluaim5 USE_LUA52=Yes
+	@$(TECMAKE_CMD) MF=cdluaim5 USE_LUA53=Yes
+#	@$(TECMAKE_CMD) MF=cdluaim5 

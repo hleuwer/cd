@@ -24,11 +24,14 @@ ifdef USE_LUA_VERSION
 endif
 
 ifdef USE_LUA53
+  LUA_VER := 5.3
   LIBNAME := $(LIBNAME)53
 else
 ifdef USE_LUA52
+  LUA_VER := 5.2
   LIBNAME := $(LIBNAME)52
 else
+  LUA_VER := 5.1
   USE_LUA51 = Yes
   LIBNAME := $(LIBNAME)51
 endif
