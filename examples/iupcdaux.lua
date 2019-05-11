@@ -1,5 +1,7 @@
-require"cdlua"
+package.loadlib("/usr/local/lib/lua/5.2/iuplua52.so", "*")
 require"iuplua"
+package.loadlib("/usr/local/lib/lua/5.2/cdlua52.so", "*")
+require"cdlua"
 require"iupluacd"
 
 iupcdaux = {}
