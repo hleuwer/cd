@@ -16,8 +16,8 @@ build: tecmake
 #---------------------------------#
 # System Variables Definitions
 
-GTK_BASE=/opt/local
-GTK_MAC=Yes
+#GTK_BASE=/opt/local
+#GTK_MAC=Yes
 
 ifndef TEC_UNAME
   # Base Definitions
@@ -76,7 +76,7 @@ ifndef TEC_UNAME
   ifneq ($(findstring aarch64, $(TEC_SYSARCH)), )
     TEC_SYSARCH:=arm64
   endif
-  
+
   # Compose
   TEC_SYSRELEASE:=$(TEC_SYSVERSION).$(TEC_SYSMINOR)
   TEC_UNAME:=$(TEC_SYSNAME)$(TEC_SYSVERSION)$(TEC_SYSMINOR)
@@ -120,7 +120,7 @@ ifndef TEC_UNAME
       BUILD_64=Yes
       TEC_UNAME:=$(TEC_UNAME)_ia64
     endif
-    
+
     # arm Linux
     ifeq ($(TEC_SYSARCH), arm)
       TEC_UNAME:=$(TEC_UNAME)_arm
@@ -131,12 +131,12 @@ ifndef TEC_UNAME
       BUILD_64=Yes
       TEC_UNAME:=$(TEC_UNAME)_arm64
     endif    
-    
+
     # Linux Distribution
     TEC_DISTNAME=$(shell lsb_release -is)
     TEC_DISTVERSION=$(shell lsb_release -rs|cut -f1 -d.)
     TEC_DIST:=$(TEC_DISTNAME)$(TEC_DISTVERSION)
-    
+
     # arm Linux (Raspberry Pi) -- NOT GOOD must be improved
     ifeq ($(TEC_SYSARCH), arm)
 	    # Raspbian GNU/Linux 7 (wheezy)
