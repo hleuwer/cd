@@ -16,8 +16,10 @@ build: tecmake
 #---------------------------------#
 # System Variables Definitions
 
-#GTK_BASE=/opt/local
-#GTK_MAC=Yes
+ifeq ($(TEC_SYSNAME), Darwin)
+   GTK_BASE=/opt/local
+   GTK_MAC=Yes
+endif
 
 ifndef TEC_UNAME
   # Base Definitions
@@ -632,6 +634,7 @@ ifneq ($(findstring Linux, $(TEC_UNAME)), )
       X11_LIB := /usr/X11R6/lib64
     endif
   else
+    STDFLAGS += -fPIC
     X11_LIB := /usr/X11R6/lib
   endif
   X11_INC := /usr/X11R6/include
@@ -1073,7 +1076,8 @@ ifdef USE_LUA
   LUA_INC ?= $(LUA)/include/lua/$(LUA_VER)
   INCLUDES += $(LUA_INC)
 
-  LUA_BIN ?= $(LUA)/bin/$(TEC_UNAME)
+# leu  LUA_BIN ?= $(LUA)/bin/$(TEC_UNAME)
+  LUA_BIN ?= $(LUA)/bin
   ifdef USE_BIN2C_LUA
     BIN2C := $(LUA_BIN)/lua$(LUA_SFX) $(BIN2C_PATH)bin2c.lua
   else
