@@ -21,13 +21,10 @@ do_all:
 sysinfo:
 	@cd ./src && $(MAKE) -f ../tecmake.mak sysinfo
 
-.PHONY: clean clean-target clean-obj install install-app install-slib install-dlib install-mod uninstall install-list
+.PHONY: clean install install-app install-slib install-dlib install-mod uninstall install-list
 
-clean clean-target clean-obj:
-	for i in $(SUBDIRS); \
-	do \
-	  cd $$i; $(MAKE)  -f ../tecmake.mak $@; cd ..; \
-	done
+clean:
+	rm -rf obj lib
 
 install: install-app install-slib install-dlib install-mod install-inc
 
