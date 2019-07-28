@@ -19,7 +19,7 @@ do_all:
 	@$(MAKE) --no-print-directory -C ./src/ do_all
 
 sysinfo:
-	@$(MAKE) --no-print-directory -C ./src
+	@cd ./src && $(MAKE) -f ../tecmake.mak sysinfo
 
 .PHONY: clean clean-target clean-obj install install-app install-slib install-dlib install-mod uninstall install-list
 
