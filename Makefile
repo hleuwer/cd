@@ -21,7 +21,7 @@ do_all:
 sysinfo:
 	@cd ./src && $(MAKE) -f ../tecmake.mak sysinfo
 
-.PHONY: clean install install-app install-slib install-dlib install-mod uninstall install-list
+.PHONY: clean install install-app install-slib install-dlib install-mod uninstall install-list install-inc
 
 clean:
 	rm -rf obj lib
