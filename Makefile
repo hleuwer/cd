@@ -11,8 +11,6 @@ INSTALL_LIBDIR = $(INSTALL_DIR)/lib
 INSTALL_MODDIR = $(INSTALL_DIR)/lib//lua
 INSTALL_INCDIR = $(INSTALL_DIR)/include
 
-TEC_UNAME=$(shell ls lib)
-
 .PHONY: do_all
 
 do_all:
@@ -20,6 +18,7 @@ do_all:
 
 sysinfo:
 	@cd ./src && $(MAKE) -f ../tecmake.mak sysinfo
+	@echo $(TEC_UNAME)
 
 .PHONY: clean install install-app install-slib install-dlib install-mod uninstall install-list install-inc
 
@@ -72,9 +71,9 @@ endif
 ifeq (MacOS, $(TEC_SYSNAME))
 	@find . -name "*.dylib" > dlib.list
 endif
-#	@cd lib/$(TEC_UNAME)/Lua51 && ls *.so | sed -s s/lib//1 > ../../../mods51.list
-	@cd lib/$(TEC_UNAME)/Lua52 && ls *.so | sed -s s/lib//1 > ../../../mods52.list
-	@cd lib/$(TEC_UNAME)/Lua53 && ls *.so | sed -s s/lib//1 > ../../../mods53.list
+#	@cd lib/$(TEC_UNAME)/Lua51 && ls *.so | sed  s/lib//1 > ../../../mods51.list
+	@cd lib/$(TEC_UNAME)/Lua52 && ls *.so | sed  s/lib//1 > ../../../mods52.list
+	@cd lib/$(TEC_UNAME)/Lua53 && ls *.so | sed  s/lib//1 > ../../../mods53.list
 	@find . -name "*.a" > slib.list
 	@echo > apps.list
 #	@find bin/$(TEC_UNAME) -type f > apps.list

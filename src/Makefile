@@ -1,7 +1,7 @@
 ifeq ($(OS), Windows_NT)
   TECMAKE_CMD = $(MAKE) --no-print-directory -f ../tecmakewin.mak TEC_UNAME=$(TEC_UNAME)
 else
-  TECMAKE_CMD = $(MAKE) --no-print-directory -f ../tecmake.mak
+  TECMAKE_CMD = $(MAKE) --no-print-directory -f ../tecmake.mak TEC_UNAME=$(TEC_UNAME)
 endif
 
 .PHONY: do_all cd cd_pdflib cdpdf cdgl cdim cdcontextplus cdlua5 cdluapdf5 cdluagl5 cdluacontextplus5 cdluaim5
