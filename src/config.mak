@@ -77,7 +77,11 @@ ifdef USE_GDK
   USE_GTK = Yes
   CHECK_GTK = Yes
   LIBS = pangocairo-1.0 cairo
-  DEFINES += GTK_DISABLE_DEPRECATED 
+  DEFINES += GTK_DISABLE_DEPRECATED
+  ifdef GTK_QUARTZ
+    DEFINES += GTK_QUARTZ
+    DEFINES += GDK_WINDOWING_QUARTZ
+  endif
   SRC += drv/cd0wmf.c
   ifdef USE_GTK3
     DEFINES += GDK_DISABLE_DEPRECATED GSEAL_ENABLE USE_GTK3
@@ -106,7 +110,11 @@ ifdef USE_GDK
         STDINCS = $(GTK)/include/gtk-3.0/unix-print
         SRC += drv/cd0emf.c
       else
-        STDINCS = $(GTK)/include/gtk-unix-print-2.0
+        ifdef USE_PKGCONFIG
+          FULL_INCLUDES = $(shell pkg-config --cflags-only-I gtk+-unix-print-2.0)
+        else
+          STDINCS = $(GTK)/include/gtk-unix-print-2.0
+	endif
       endif 
 #    endif
     ifneq ($(findstring Linux26g4, $(TEC_UNAME)), )

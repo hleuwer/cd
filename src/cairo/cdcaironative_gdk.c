@@ -104,10 +104,13 @@ static cairo_t* cdcairoNativeCreateContext(cdCanvas* canvas, GdkWindow* window)
 
   /* TODO: INCOMPLETE */
   
-  surface = cairo_quartz_surface_create (cairo_format_t format, canvas->w, canvas->h);
-
-  surface = cairo_quartz_surface_create_for_cg_context(CGContextRef cgContext, canvas->w, canvas->h);
-
+  surface = cairo_quartz_surface_create (0, canvas->w, canvas->h);
+  /*
+  surface = cairo_quartz_surface_create ((cairo_format_t) format, canvas->w, canvas->h);
+  */
+  /*
+  surface = cairo_quartz_surface_create_for_cg_context((CGContextRef) cgContext, canvas->w, canvas->h);
+  */
 #else
   XWindowAttributes wa;
   GdkDisplay* display = gdk_display_get_default();

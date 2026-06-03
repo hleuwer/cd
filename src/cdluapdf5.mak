@@ -13,6 +13,10 @@ ifdef USE_LUA_VERSION
   USE_LUA51:=
   USE_LUA52:=
   USE_LUA53:=
+  USE_LUA54:=
+  ifeq ($(USE_LUA_VERSION), 54)
+    USE_LUA54:=Yes
+  endif
   ifeq ($(USE_LUA_VERSION), 53)
     USE_LUA53:=Yes
   endif
@@ -24,18 +28,23 @@ ifdef USE_LUA_VERSION
   endif
 endif
 
-ifdef USE_LUA53
-  LUA_VER := 5.3
-  LIBNAME := $(LIBNAME)53
+ifdef USE_LUA54
+  LUA_VER := 5.4
+  LIBNAME := $(LIBNAME)54
 else
-ifdef USE_LUA52
-  LUA_VER := 5.2
-  LIBNAME := $(LIBNAME)52
-else
-  LUA_VER := 5.1
-  USE_LUA51 = Yes
-  LIBNAME := $(LIBNAME)51
-endif
+  ifdef USE_LUA53
+    LUA_VER := 5.3
+    LIBNAME := $(LIBNAME)53
+  else
+    ifdef USE_LUA52
+      LUA_VER := 5.2
+      LIBNAME := $(LIBNAME)52
+    else
+      LUA_VER := 5.1
+      USE_LUA51 = Yes
+      LIBNAME := $(LIBNAME)51
+    endif
+ endif
 endif
 
 # To not link with the Lua dynamic library in UNIX

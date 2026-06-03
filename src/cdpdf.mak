@@ -5,6 +5,7 @@ OPT = YES
 SRC = drv/cdpdf.c
 
 INCLUDES = . sim pdflib/pdflib
+
 LIBS = pdflib
 
 USE_CD = YES

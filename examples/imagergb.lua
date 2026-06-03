@@ -21,7 +21,6 @@ while i < size do
 
   i = i + 1
 end
-
 dlg = iupcdaux.new_dialog(w, h)
 cnv = dlg[1]     -- retrieve the IUP canvas
 

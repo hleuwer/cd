@@ -17,8 +17,8 @@ build: tecmake
 # System Variables Definitions
 
 ifeq ($(TEC_SYSNAME), MacOS)
-#   GTK_BASE=/opt/local
-   GTK_BASE=/usr/local
+   GTK_BASE=/opt/local
+#   GTK_BASE=/usr/local
    GTK_MAC=Yes
 endif
 
@@ -210,6 +210,10 @@ sysinfo:
 	@echo 'USE_LUA53 = $(USE_LUA53)'
 	@echo 'INCLUDES = $(INCLUDES)'
 	@echo 'CFLAGS = $(CFLAGS)'
+	@echo 'LFLAGS = $(LFLAGS)'
+	@echo 'FULL_LDIR = $(FULL_LDIR)'
+	@echo 'FULL_LIBS = $(FULL_LIBS)'
+	@echo 'FULL_INCLUDES = $(FULL_INCLUDES)'
 
 #---------------------------------#
 # Known Platforms
@@ -472,6 +476,9 @@ endif
 ifdef USE_LUA53
   LIBLUA_SFX := 53
 endif
+ifdef USE_LUA54
+  LIBLUA_SFX := 54
+endif
 
 ifdef USE_OLDLIBLUA
   TEC_UNAME_LIBLUA_DIR ?= $(TEC_UNAME_LIB_DIR)
@@ -565,11 +572,11 @@ endif
 
 # Definitions for X11
 X11_LIBS := Xext X11
-#X11_LIB :=
-#X11_INC :=                     #include <X11/X.h>
+X11_LIB := /usr/local/lib
+X11_INC := /usr/local/include
 
 # Definitions for OpenGL
-OPENGL_LIBS := GLU GL
+#OPENGL_LIBS := GLU GL
 #OPENGL_LIB :=
 #OPENGL_INC :=                  #include <GL/gl.h>  and possibly
 MOTIFGL_LIB := GLw              #include <GL/GLwMDrawA.h>
@@ -591,7 +598,11 @@ ifneq ($(findstring MacOS, $(TEC_UNAME)), )
   #FREETYPE_INC := /sw/include/freetype2
   #MacPorts
 #  FREETYPE_INC := /opt/local/include/freetype2
-  FREETYPE_INC := /usr/local/include/freetype2
+  ifdef USE_PKGCONFIG
+    FULL_INCLUDES += $(shell pkg-config --cflags-only-I freetype2)
+  else
+    FREETYPE_INC := /usr/local/include/freetype2
+  endif
 #  FREETYPE_INC := /usr/local/include/freetype
 endif
 
@@ -755,26 +766,15 @@ ifneq ($(findstring SunOS, $(TEC_UNAME)), )
 endif
 
 ifneq ($(findstring MacOS, $(TEC_UNAME)), )
-  #Homebrew
+  ## Homebrew
   STDINCS += /usr/local/include
-  LDIR += /usr/local/lib
+  LDIR +=  /usr/X11R6/lib
   WARNFLAGS += -Wno-incompatible-function-pointer-types
-  #Fink
-  #STDINCS += /sw/include
-  #LDIR += /sw/lib
-  #Macports
-  #STDINCS += /opt/local/include
-  #LDIR += /opt/local/lib
-  # leu
-  STDINCS += /usr/local/include
-  LDIR += /usr/local/lib
-  
+  WARNFLAGS += -Wno-implicit-function-declaration 
   UNIX_BSD = Yes
   X11_LIBS := Xp Xext X11
-#  X11_LIB := /usr/X11R6/lib /usr/X11/lib
-#  X11_INC := /usr/X11R6/include /usr/X11/include
-#  X11_LIB := /opt/X11/lib
-#  X11_INC := /opt/X11/include
+  X11_LIB := /usr/X11R6/lib /usr/X11/lib
+  X11_INC := /usr/X11R6/include /usr/X11/include
   MOTIF_INC := /usr/OpenMotif/include
   MOTIF_LIB := /usr/OpenMotif/lib
   ifdef BUILD_DYLIB
@@ -785,17 +785,8 @@ ifneq ($(findstring MacOS, $(TEC_UNAME)), )
     STDLDFLAGS := -bundle -undefined dynamic_lookup
   endif
   ifdef USE_OPENGL
-#       OPENGL_INC += /usr/local/include/xcb
-#      LFLAGS = -framework OpenGL
-#       LFLAGS = -L /opt/X11/lib
-#      LFLAGS = -L /opt/local/lib
-      OPENGL_LIBS := GL GLU
-#       OPENGL_LIBS := glfw GLEW
-  ifeq ($(TEC_SYSMINOR), 5)
-      #Darwin9 Only - OpenGL bug fix for Fink, when the message bellow appears
-      #   ld: cycle in dylib re-exports with /usr/X11R6/lib/libGL.dylib
-      LFLAGS += -dylib_file /System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib
-    endif
+      LFLAGS = -framework OpenGL -framework GLUT
+      OPENGL_LIBS := GL GLUT
   endif
   ifdef USE_OPENMP
     STDFLAGS += -fopenmp
@@ -1219,8 +1210,13 @@ ifdef USE_CD
     LIBS += fontconfig
   endif
   ifneq ($(findstring MacOS, $(TEC_UNAME)), )
-    LIBS += fontconfig
-  endif
+    ifdef USE_PKGCONFIG
+      FULL_LIBS += $(shell pkg-config --libs-only-l fontconfig)
+      FULL_LDIR += $(shell pkg-config --libs-only-L fontconfig)
+    else
+      LIBS += fontconfig
+    endif
+endif
     
   LINK_FREETYPE = Yes
 
@@ -1243,8 +1239,12 @@ ifdef USE_IM
   endif
 
   # In Linux, always use libpng from the system (since 4.15)
-  LIBS += png
-
+  ifdef USE_PKGCONFIG
+    FULL_LIBS += $(shell pkg-config --libs-only-l libpng)
+    FULL_LDIR += $(shell pkg-config --libs-only-L libpng)
+  else
+    LIBS += png
+  endif
   IM_INC ?= $(IM)/include
   INCLUDES += $(IM_INC)
 endif
@@ -1296,8 +1296,12 @@ ifdef LINK_FREETYPE
   ifndef NO_ZLIB
     LINK_ZLIB = Yes
   endif
-  
-  LIBS += freetype
+  ifdef USE_PKGCONFIG
+    FULL_LIBS += $(shell pkg-config --libs-only-l freetype2)
+    FULL_LDIR += $(shell pkg-config --libs-only-L freetype2)
+  else
+    LIBS += freetype
+  endif
 endif
 
 ifdef USE_ZLIB
@@ -1352,112 +1356,103 @@ ifdef USE_GTK
   else
     GTKSFX:=2
   endif
-  
+
+#  ifneq ($(findstring Yes, $(USE_PKGCONFIG)), )
   ifdef USE_PKGCONFIG
     # get compile/link flags via pkg-config
     PKGINCS += $(shell pkg-config --cflags gtk+-$(GTKSFX).0 gdk-$(GTKSFX).0)
     PKGLIBS += $(shell pkg-config --libs gtk+-$(GTKSFX).0 gdk-$(GTKSFX).0)
     GTK_BASE := $(shell pkg-config --variable=prefix gtk+-$(GTKSFX).0)
-    GTK := $(GTK_BASE)    
-  else
-    CHECK_GTK = Yes
-    ifneq ($(findstring MacOS, $(TEC_UNAME)), )
-  # Option 1 - Fink GTK port
-  #    LDIR += $(GTK)/lib
-  #    ifndef NO_OVERRIDE
-  #      override USE_X11 = Yes
-  #    endif
-  #    ifdef GTK_MAC
-  #      LIBS += gtk-quartz-$(GTKSFX).0 gdk-quartz-$(GTKSFX).0 pango???-1.0
-  #    else
-  #      LIBS += gtk-x11-$(GTKSFX).0 gdk-x11-$(GTKSFX).0 pangox-1.0
-  #    endif
-  # Option 2 - Imendio Framework
-  #   STDINCS += /Library/Frameworks/Gtk.framework/Headers
-  #   STDINCS += /Library/Frameworks/GLib.framework/Headers
-  #   STDINCS += /Library/Frameworks/Cairo.framework/Headers
-  #   LFLAGS += -framework Gtk
-  # Option 3 - GTK-OSX Framework
-     LDIR += $(GTK)/lib
-     LFLAGS += -framework Carbon
-     ifdef USE_GTK3
-#        LIBS += gtkextra-quartz-$(GTKSFX).0 gdk-quartz-2.0 pangoft2-1.0
-        LIBS += gtk-$(GTKSFX).0 gtkextra-quartz-$(GTKSFX).0 gdk-$(GTKSFX).0 pangoft2-1.0
-     else
-        LIBS += gtk-quartz-$(GTKSFX).0 gdk-quartz-$(GTKSFX).0 pangoft2-1.0
-     endif
-      LIBS += freetype
-      DEFINES+=USE_GTK$(GTKSFX)
+  endif    
+  GTK := $(GTK_BASE)
+  CHECK_GTK = Yes
+  ifneq ($(findstring MacOS, $(TEC_UNAME)), )
+    #ifdef GTK_MAC
+       #LIBS += gtk-quartz-$(GTKSFX).0 gdk-quartz-$(GTKSFX).0 pango???-1.0
+    #else
+      #LIBS += gtk-x11-$(GTKSFX).0 gdk-x11-$(GTKSFX).0 pangox-1.0
+    #endif
+    LDIR += $(GTK)/lib
+    LFLAGS += -framework Carbon
+    ifdef USE_GTK3
+      #LIBS += gtkextra-quartz-$(GTKSFX).0 gdk-quartz-2.0 pangoft2-1.0
+      #LIBS += gtk-$(GTKSFX).0 gtkextra-quartz-$(GTKSFX).0 gdk-$(GTKSFX).0 pangoft2-1.0
+      LIBS += gtk-$(GTKSFX).0 gdk-$(GTKSFX).0 pangoft2-1.0
     else
-      # if not the default, then include it for linker
-      # must be before the default
-      ifdef GTK_BASE
-        LDIR += $(GTK)/lib
-      endif
-      ifndef NO_OVERRIDE
-        override USE_X11 = Yes
-      endif
-      ifdef USE_GTK3
-        LIBS += gtk-3 gdk-3 
-        LINK_CAIRO = Yes
-      else
-        LIBS += gtk-x11-2.0 gdk-x11-2.0 pangox-1.0
-      endif
+      LIBS += gtk-quartz-$(GTKSFX).0 gdk-quartz-$(GTKSFX).0 pangoft2-1.0
     endif
-    
-    ifdef LINK_CAIRO
-      LIBS += pangocairo-1.0 cairo
+    LIBS += freetype
+    DEFINES+=USE_GTK$(GTKSFX)
+  else
+    # if not the default, then include it for linker
+    # must be before the default
+    ifdef GTK_BASE
+      LDIR += $(GTK)/lib
     endif
+    ifndef NO_OVERRIDE
+      override USE_X11 = Yes
+    endif
+    ifdef USE_GTK3
+      LIBS += gtk-3 gdk-3 
+      LINK_CAIRO = Yes
+    else
+      LIBS += gtk-x11-2.0 gdk-x11-2.0 pangox-1.0
+    endif
+  endif
 
+  ifdef LINK_CAIRO
+    LIBS += pangocairo-1.0 cairo
+  endif
+  ifndef USE_PKGCONFIG
     LIBS += gdk_pixbuf-2.0 pango-1.0 gobject-2.0 gmodule-2.0 glib-2.0
-    
-    STDINCS += $(GTK)/include/atk-1.0 $(GTK)/include/gtk-$(GTKSFX).0 $(GTK)/include/gdk-pixbuf-2.0 
-    STDINCS += $(GTK)/include/cairo $(GTK)/include/pango-1.0 $(GTK)/include/glib-2.0
-    STDINCS += $(GTK)/include/harfbuzz
+  endif
 
-    ifeq ($(TEC_SYSARCH), x64)
+  STDINCS += $(GTK)/include/atk-1.0 $(GTK)/include/gtk-$(GTKSFX).0 $(GTK)/include/gdk-pixbuf-2.0 
+  STDINCS += $(GTK)/include/cairo $(GTK)/include/pango-1.0 $(GTK)/include/glib-2.0
+  STDINCS += $(GTK)/include/harfbuzz
+
+  ifeq ($(TEC_SYSARCH), x64)
+    STDINCS += $(GTK)/lib64/glib-2.0/include 
+    ifndef USE_GTK3
+      STDINCS += $(GTK)/lib64/gtk-2.0/include
+    endif
+
+    # Add also these to avoid errors in systems that lib64 does not exists
+    STDINCS += $(GTK)/lib/glib-2.0/include 
+    ifndef USE_GTK3
+      STDINCS += $(GTK)/lib/gtk-2.0/include
+    endif
+
+    # Add also support for newer instalations
+    STDINCS += $(GTK)/lib/x86_64-linux-gnu/glib-2.0/include
+    STDINCS += $(GTK)/lib/arm-linux-gnueabihf/glib-2.0/include
+    ifndef USE_GTK3
+      STDINCS += $(GTK)/lib/x86_64-linux-gnu/gtk-2.0/include
+    endif
+  else 
+    ifeq ($(TEC_SYSARCH), ia64)
       STDINCS += $(GTK)/lib64/glib-2.0/include 
       ifndef USE_GTK3
         STDINCS += $(GTK)/lib64/gtk-2.0/include
       endif
-      
-      # Add also these to avoid errors in systems that lib64 does not exists
+    else
       STDINCS += $(GTK)/lib/glib-2.0/include 
       ifndef USE_GTK3
         STDINCS += $(GTK)/lib/gtk-2.0/include
       endif
-      
+
       # Add also support for newer instalations
-      STDINCS += $(GTK)/lib/x86_64-linux-gnu/glib-2.0/include
+      STDINCS += $(GTK)/lib/i386-linux-gnu/glib-2.0/include
       STDINCS += $(GTK)/lib/arm-linux-gnueabihf/glib-2.0/include
       ifndef USE_GTK3
-        STDINCS += $(GTK)/lib/x86_64-linux-gnu/gtk-2.0/include
-      endif
-    else 
-      ifeq ($(TEC_SYSARCH), ia64)
-        STDINCS += $(GTK)/lib64/glib-2.0/include 
-        ifndef USE_GTK3
-          STDINCS += $(GTK)/lib64/gtk-2.0/include
-        endif
-      else
-        STDINCS += $(GTK)/lib/glib-2.0/include 
-        ifndef USE_GTK3
-          STDINCS += $(GTK)/lib/gtk-2.0/include
-        endif
-        
-        # Add also support for newer instalations
-        STDINCS += $(GTK)/lib/i386-linux-gnu/glib-2.0/include
-        STDINCS += $(GTK)/lib/arm-linux-gnueabihf/glib-2.0/include
-        ifndef USE_GTK3
-          STDINCS += $(GTK)/lib/i386-linux-gnu/gtk-2.0/include
-          STDINCS += $(GTK)/lib/arm-linux-gnueabihf/gtk-2.0/include
-        endif
+        STDINCS += $(GTK)/lib/i386-linux-gnu/gtk-2.0/include
+        STDINCS += $(GTK)/lib/arm-linux-gnueabihf/gtk-2.0/include
       endif
     endif
-    
-    ifneq ($(findstring FreeBSD, $(TEC_UNAME)), )
-      STDINCS += /lib/X11R6/include/gtk-2.0
-    endif
+  endif
+
+  ifneq ($(findstring FreeBSD, $(TEC_UNAME)), )
+    STDINCS += /lib/X11R6/include/gtk-2.0
   endif
 endif
 
@@ -1516,7 +1511,9 @@ ifdef LDIR
   LDIR := $(addprefix -L, $(LDIR))
 endif
 
-
+INCLUDES += $(FULL_INCLUDES)
+LDIR += $(FULL_LDIR)
+LIBS += $(FULL_LIBS)
 #---------------------------------#
 # Definitions of private variables
 
@@ -1741,19 +1738,19 @@ endif
 
 $(OBJDIR)/%.o:  $(SRCDIR)/%.c
 	@echo ''; echo Tecmake: compiling $(<F) ...
-	$(ECHO)$(CC) -c $(CFLAGS) -o $@ $<
+	$(ECHO)$(CC) -MMD -c $(CFLAGS) -o $@ $<
 
 $(OBJDIR)/%.o:  $(SRCDIR)/%.cpp
 	@echo ''; echo Tecmake: compiling $(<F) ...
-	$(ECHO)$(CPPC) -c $(CXXFLAGS) -o $@ $<
+	$(ECHO)$(CPPC) -MMD -c $(CXXFLAGS) -o $@ $<
 
 $(OBJDIR)/%.o:  $(SRCDIR)/%.cxx
 	@echo ''; echo Tecmake: compiling $(<F) ...
-	$(ECHO)$(CPPC) -c $(CXXFLAGS) -o $@ $<
+	$(ECHO)$(CPPC) -MMD -c $(CXXFLAGS) -o $@ $<
 
 $(OBJDIR)/%.o:  $(SRCDIR)/%.cc
 	@echo ''; echo Tecmake: compiling $(<F) ...
-	$(ECHO)$(CPPC) -c $(CXXFLAGS) -o $@ $<
+	$(ECHO)$(CPPC) -MMD -c $(CXXFLAGS) -o $@ $<
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.f
 	@echo ''; echo Tecmake: compiling $(<F) ...
@@ -1781,7 +1778,7 @@ $(OBJROOT)/%$(LO_SUFFIX).lo:  $(SRCLUADIR)/%.lua
 
 ifdef LOHPACK
 $(LOHDIR)/$(LOHPACK):  $(SRCLUA)
-	@echo ''; echo Tecmake: generating $(<F) ...
+ff	@echo ''; echo Tecmake: generating $(<F) ...
 	$(ECHO)$(LUABIN) $(LUAPRE) $(LUAPREFLAGS) -l $(SRCLUADIR) -o $@ $(SRCLUA)
 endif
 
@@ -1816,10 +1813,10 @@ endif
 
 ###################
 ifndef NO_DEPEND
-include $(DEPEND)
+  -include $(DEPEND)
 endif
 ###################
-
+-include $(OBJS:.o=.d)
 
 #---------------------------------#
 # Management Rules
